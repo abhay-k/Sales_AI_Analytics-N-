@@ -1,16 +1,16 @@
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Image
-from reportlab.lib.styles import getSampleStyleSheet
+def generate_report(total_orders, total_revenue, region_sales, customer_sales,
+                    insights, clusters, forecast, region_chart_file, customer_chart_file):
 
-def generate_report(insight, region_chart, customer_chart):
+    report = {
+        "total_orders": total_orders,
+        "total_revenue": total_revenue,
+        "region_sales": region_sales,
+        "customer_sales": customer_sales,
+        "insights": insights,
+        "clusters": clusters,
+        "forecast": forecast,
+        "region_chart": region_chart_file,
+        "customer_chart": customer_chart_file
+    }
 
-    styles = getSampleStyleSheet()
-    report = SimpleDocTemplate("sales_report.pdf")
-    content = []
-
-    content.append(Paragraph("Sales Analytics Report", styles["Title"]))
-    content.append(Paragraph(insight, styles["Normal"]))
-    content.append(Image(region_chart))
-    content.append(Image(customer_chart))
-
-    report.build(content)
-    return "sales_report.pdf"
+    return report
