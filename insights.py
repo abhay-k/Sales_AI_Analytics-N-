@@ -1,15 +1,13 @@
-def generate_sales_insights(data):
+def generate_sales_insights(df):
 
-    sales = [d["sales"] for d in data]
+    total_revenue = df["Revenue"].sum()
+    avg_revenue = df["Revenue"].mean()
+    top_region = df.groupby("Region")["Revenue"].sum().idxmax()
+    top_customer = df.groupby("Customer")["Revenue"].sum().idxmax()
 
-    avg = sum(sales)/len(sales)
-
-    trend = "increasing" if sales[-1] > sales[0] else "decreasing"
-
-    insight = f"""
-    Average sales are {avg}.
-    Overall trend is {trend}.
-    Consider increasing marketing in high growth segments.
+    return f"""
+    Total revenue: ${total_revenue}
+    Average order value: ${avg_revenue}
+    Top region: {top_region}
+    Top customer: {top_customer}
     """
-
-    return insight
