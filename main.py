@@ -13,7 +13,20 @@ app = FastAPI()
 def sales_report(data: dict):
 
     df = pd.DataFrame(data["sales"])
+
+    # Ensure correct types
+    df["Qty"] = df["Qty"].astype(int)
+    df["Price"] = df["Price"].astype(float)
+
+    # Revenue
     df["Revenue"] = df["Qty"] * df["Price"]
+
+    # Convert Date column
+    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+
+    # Prophet-required columns
+    df["ds"] = df["Date"]
+    df["y"] = df["Revenue"]
 
     # Summaries
     total_orders = len(df)
@@ -21,37 +34,35 @@ def sales_report(data: dict):
     region_sales = df.groupby("Region")["Revenue"].sum().to_dict()
     customer_sales = df.groupby("Customer")["Revenue"].sum().to_dict()
 
-    # Insights
-    insight = generate_sales_insights(df)
+    # Analytics
+    insights = generate_sales_insights(df)
+    clusters = segment_customers(df)
+    forecast = prophet_forecast(df)
 
     # Charts
     region_chart_file = region_chart(df)
     customer_chart_file = customer_chart(df)
 
-    # Clustering (Customer Segmentation)
-    clustering_result = segment_customers(df)
-
-    # Forecasting (requires aggregated daily totals)
-    # For now, we simulate daily totals by grouping by SO No
-    forecast_input = df.groupby("SO No")["Revenue"].sum().reset_index()
-    forecast_input.columns = ["ds", "y"]
-    forecast = prophet_forecast(forecast_input)
-
-    # PDF Report
-    pdf_file = generate_report(
-        insight,
+    # Report
+    report_file = generate_report(
+        total_orders,
+        total_revenue,
+        region_sales,
+        customer_sales,
+        insights,
+        clusters,
+        forecast,
         region_chart_file,
         customer_chart_file
     )
 
     return {
-        "totalOrders": total_orders,
-        "totalRevenue": total_revenue,
-        "regionSales": region_sales,
-        "customerSales": customer_sales,
-        "insight": insight,
-        "customerSegmentation": clustering_result,
+        "total_orders": total_orders,
+        "total_revenue": total_revenue,
+        "region_sales": region_sales,
+        "customer_sales": customer_sales,
+        "insights": insights,
+        "clusters": clusters,
         "forecast": forecast,
-        "reportFile": pdf_file
+        "report_file": report_file
     }
-
