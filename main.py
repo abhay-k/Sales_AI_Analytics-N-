@@ -6,12 +6,13 @@ from insights import generate_sales_insights
 app = FastAPI()
 
 @app.post("/sales-report")
+def sales_report(data: dict):
 
-def sales_report(data:list):
+    rows = data["sales"]
 
-    insight = generate_sales_insights(data)
+    insight = generate_sales_insights(rows)
 
-    chart = sales_chart(data)
+    chart = sales_chart(rows)
 
     report = generate_report(chart, insight)
 
@@ -19,3 +20,4 @@ def sales_report(data:list):
         "insight": insight,
         "report": report
     }
+
