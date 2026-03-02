@@ -1,13 +1,10 @@
-from sklearn.cluster import KMeans
 import pandas as pd
+from sklearn.cluster import KMeans
 
 def segment_customers(df):
+    features = df[["Qty", "Price", "Revenue"]]
 
-    # Aggregate revenue per customer
-    agg = df.groupby("Customer")["Revenue"].sum().reset_index()
-    agg.columns = ["Customer", "Revenue"]
+    model = KMeans(n_clusters=4, random_state=42)
+    df["Cluster"] = model.fit_predict(features)
 
-    model = KMeans(n_clusters=4, n_init=10)
-    agg["Cluster"] = model.fit_predict(agg[["Revenue"]])
-
-    return agg.to_dict(orient="records")
+    return df[["Customer", "Cluster"]].to_dict(orient="records")
