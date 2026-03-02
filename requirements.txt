@@ -3,7 +3,6 @@ uvicorn
 pandas
 numpy
 scikit-learn
-statsmodels
 prophet
 matplotlib
 seaborn
