@@ -43,7 +43,7 @@ def sales_report(data: dict):
     region_chart_file = region_chart(df)
     customer_chart_file = customer_chart(df)
 
-    # Report
+    # PDF Report
     report_file = generate_report(
         total_orders,
         total_revenue,
